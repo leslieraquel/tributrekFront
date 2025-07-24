@@ -1,0 +1,39 @@
+  <div class="row">
+    <div class="col-md-12 mr-3 dialog-container">
+    <mat-card class="mt-4">
+      <mat-card-header>
+        <mat-card-title>{{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} Paquete</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="row mt-4">
+            <div class="col-md-6 ">
+                <mat-form-field class="example-full-width">
+                <mat-label>Nombre Paquete</mat-label>
+                  <input matInput [(ngModel)]="descripcionPaquete">
+                </mat-form-field>
+            </div>
+             <div class="col-md-6 ">
+                <mat-form-field class="example-full-width">
+                <mat-label>Numero de dias</mat-label>
+                  <input matInput [(ngModel)]="diasPaquete">
+                </mat-form-field>
+            </div>
+            <div class="col-md-6">
+                <mat-form-field>
+                    <mat-label>Elija un itinerario</mat-label>
+                <mat-select matNativeControl [(ngModel)]="itinerarioSeleccionada">
+                   <mat-option *ngFor="let iti of itinerarios" [value]="iti.idItinerario">
+                        {{ iti.nombreItinerario }}
+                    </mat-option>
+                </mat-select>
+                </mat-form-field>
+            </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
+      </mat-card-actions>
+    </mat-card>
+    </div>
+  </div>
+
