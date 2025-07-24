@@ -37,18 +37,20 @@ export class DialogPaqueteComponent implements OnInit {
 
    diasPaquete: number = 0;
    detallesDias: { descripcion: string }[] = [];
+    diasArray: number[] = [];
+
 
 
   constructor (public dialog: MatDialog,private http: HttpClient, @Inject(MAT_DIALOG_DATA) public data: any){}
-   
+
+  generarDias() {
+    this.diasArray = Array.from({ length: this.diasPaquete }, (_, i) => i + 1);
+  }
 
    cargarItinerarios() {
     return this.http.get<any[]>('https://localhost:7089/api/tributrek/Itinerario/ListarItinerario');
   }
 
-  generarDias() {
-  this.detallesDias = Array.from({ length: this.diasPaquete }, () => ({ descripcion: '' }));
-}
 
   ActualizarOregistrarItinerario() {
   const nuevoPaquete = {
@@ -59,7 +61,7 @@ export class DialogPaqueteComponent implements OnInit {
   };
 
   const url = 'https://localhost:7089/api/tributrek/Itinerario/';
- 
+
   if (this.data.modo === 'agregar') {
      this.http.post(url+'CrearItinerario', nuevoPaquete).subscribe({
     next: (res) => {
@@ -73,9 +75,9 @@ export class DialogPaqueteComponent implements OnInit {
   });
 
   } else if (this.data.modo === 'editar') {
-  
+
      this.http.put(`${url}ActualizarItinerario/${nuevoPaquete.idtri_paq_iti}`, nuevoPaquete).subscribe({
-     
+
     next: (res) => {
       console.log('Itinerario actualizado correctamente', res);
       alert('¡Registro actualizado!');
@@ -99,7 +101,7 @@ export class DialogPaqueteComponent implements OnInit {
        this.idPaquete = it.idtri_paq_iti;
 
     }
-    
+
 
     this.cargarItinerarios().subscribe({
       next: (data) => {

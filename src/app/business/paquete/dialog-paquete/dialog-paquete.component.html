@@ -29,6 +29,25 @@
                 </mat-form-field>
             </div>
         </div>
+        <div class="row" *ngIf="diasArray.length > 0">
+          <div class="col-md-12">
+              <table class="table table-striped table-bordered table-hover">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Actividad</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let persona of personas; let i = index">
+                  <td>2</td>
+                </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>

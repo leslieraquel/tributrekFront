@@ -25,7 +25,7 @@ export interface UserData {
 @Component({
   selector: 'app-nivel',
   standalone: true,
-  imports: [MatFormFieldModule, 
+  imports: [MatFormFieldModule,
              MatInputModule,
              MatTableModule,
              MatSortModule,
@@ -47,19 +47,19 @@ export class NivelComponent  implements AfterViewInit  {
        mostrarCard: boolean = false;
         displayedColumns: string[] = ['idNivel', 'nombreNivel','estadoNivel','acciones'];
         dataSource = new MatTableDataSource<UserData>();
-    
+
       constructor(private http: HttpClient,public dialog: MatDialog) {}
-    
-      @ViewChild(MatPaginator) paginator!: MatPaginator; 
+
+      @ViewChild(MatPaginator) paginator!: MatPaginator;
       @ViewChild(MatSort) sort!: MatSort;
-      
+
         ngAfterViewInit():void {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          this.cargarCategorias();
+          this.cargarNiveles();
         }
-      
-         cargarCategorias() {
+
+         cargarNiveles() {
           this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Nivel/ListarNivel')
             .subscribe(data => {
               console.log(data);
@@ -68,29 +68,29 @@ export class NivelComponent  implements AfterViewInit  {
               console.error('Error al cargar actividades:', error);
             });
         }
-      
+
         applyFilter(event: Event) {
           const filterValue = (event.target as HTMLInputElement).value;
           this.dataSource.filter = filterValue.trim().toLowerCase();
-      
+
           if (this.dataSource.paginator) {
             this.dataSource.paginator.firstPage();
           }
         }
-    
-        abrirDialogo(modo: 'agregar' | 'editar', categoria?: any): void {
-          console.log(categoria); 
+
+        abrirDialogo(modo: 'agregar' | 'editar', Nivel?: any): void {
+          console.log(Nivel);
           this.dialog.open(DialogNivelComponent, {
             width: '80%',   // 90% del ancho del viewport padre (ventana)
             height: '30%',  // 80% del alto del viewport padre
             maxWidth: '80%',  // desactivar el maxWidth por defecto
             data: {
             modo: modo,                   // 'agregar' o 'editar'
-            categoria: categoria || {} // si es editar, le pasas el objeto
+            Nivel: Nivel || {} // si es editar, le pasas el objeto
             }
           });
-          
-        } 
-  
+
+        }
+
 
 }

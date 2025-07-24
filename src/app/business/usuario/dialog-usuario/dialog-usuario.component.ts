@@ -31,19 +31,19 @@ import { Inject } from '@angular/core';
 export class DialogUsuarioComponent {
 
     constructor (public dialog: MatDialog,private http: HttpClient, @Inject(MAT_DIALOG_DATA) public data: any){}
-   roles: any[] = [];
-   nombreUsuario: any;
-   idUsuario: any;
-   apellidoUsuario: any;
-   correoUsuario:any;
-   nombreDeUsuario:any;
-   rolSeleccionado: any;
-   EstadoUsuario: any;
+  roles: any[] = [];
+  nombreUsuario: any;
+  idUsuario: any;
+  apellidoUsuario: any;
+  correoUsuario:any;
+  nombreDeUsuario:any;
+  rolSeleccionado: any;
+  EstadoUsuario: any;
 
-  
 
-   listarRoles() {
-    return this.http.get<any[]>(`https://localhost:7089/api/tributrek/Categoria/ListarCategoria`);
+
+  listarRoles() {
+    return this.http.get<any[]>(`https://localhost:7089/api/tributrek/Rol/ListarRol`);
   }
 
 
@@ -60,9 +60,9 @@ export class DialogUsuarioComponent {
   };
 
   const url = 'https://localhost:7089/api/tributrek/Usuario/';
- 
+
   if (this.data.modo === 'agregar') {
-     this.http.post(url+'CrearUsuario', nuevoUsuario).subscribe({
+    this.http.post(url+'CrearUsuario', nuevoUsuario).subscribe({
     next: (res) => {
       console.log('Itinerario registrado', res);
       alert('¡Registro exitoso!');
@@ -74,9 +74,9 @@ export class DialogUsuarioComponent {
   });
 
   } else if (this.data.modo === 'editar') {
-  
-     this.http.put(`${url}ActualizarUsuario/${nuevoUsuario.tri_usu_id}`, nuevoUsuario).subscribe({
-     
+
+    this.http.put(`${url}ActualizarUsuario/${nuevoUsuario.tri_usu_id}`, nuevoUsuario).subscribe({
+
     next: (res) => {
       console.log('Itinerario actualizado correctamente', res);
       alert('¡Registro actualizado!');
@@ -89,11 +89,11 @@ export class DialogUsuarioComponent {
   }
 }
 
-   ngOnInit() {
+  ngOnInit() {
     console.log('Data recibida en el diálogo:', this.data);
 
     if (this.data.modo === 'editar' && this.data.itinerario) {
-       const it = this.data.itinerario;
+      const it = this.data.itinerario;
 
       this.nombreUsuario = it.tri_usu_nombres;
       this.idUsuario = it.tri_usu_id;
@@ -104,7 +104,7 @@ export class DialogUsuarioComponent {
       this.EstadoUsuario = it.tri_usu_estado;
 
     }
-    
+
     this.listarRoles().subscribe({
       next: (data) => {
         console.log(data);
