@@ -12,7 +12,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
-
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dialog-categoria',
   standalone: true,
@@ -24,7 +24,8 @@ import { Inject } from '@angular/core';
     MatDialogModule,
     MatSelectModule,
     FormsModule,
-    MatButtonModule],
+    MatButtonModule,
+    MatIconModule],
   templateUrl: './dialog-categoria.component.html',
   styleUrl: './dialog-categoria.component.scss'
 })
@@ -46,28 +47,67 @@ export class DialogCategoriaComponent {
 
   const url = 'https://localhost:7089/api/tributrek/Categoria/';
   if (this.data.modo === 'agregar') {
-     this.http.post(url+'CrearCategoria', nuevaCategoria).subscribe({
-    next: (res) => {
-      console.log('Itinerario registrado', res);
-      alert('¡Registro exitoso!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar el itinerario');
+    if(nuevaCategoria.tri_cat_nombre){
+      this.http.post(url+'CrearCategoria', nuevaCategoria).subscribe({
+      next: (res) => {
+        Swal.fire({
+                icon: 'success',
+                title: '¡Agregado!',
+                text: 'El registro fue agregado exitosamente.',
+                confirmButtonText: 'Aceptar'
+              }).then(()=>{
+                this.cerrarDialog();
+                this.limpiarDatos();
+              });
+      },
+      error: (err) => {
+        console.error('Error al registrar', err);
+              Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un problema al guardar los datos.',
+               });
+      }
+    });
+    }else{
+      Swal.fire({
+                icon: 'warning',
+                title: 'Adevertencia',
+                text: 'Llena los campos requeridos',
+                confirmButtonText: 'Aceptar'
+              });
+
     }
-  });
 
   } else if (this.data.modo === 'editar') {
-     this.http.put(`${url}ActualizarCategoria/${nuevaCategoria.tri_cat_id}`, nuevaCategoria).subscribe({
-    next: (res) => {
-      console.log('Itinerario actualizado correctamente', res);
-      alert('¡Registro actualizado!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar actualizar');
+    if(nuevaCategoria.tri_cat_nombre){
+      console.log(nuevaCategoria);
+      this.http.put(`${url}ActualizarCategoria/${nuevaCategoria.tri_cat_id}`, nuevaCategoria).subscribe({
+      next: (res) => {
+         this.cerrarDialog();
+                    Swal.fire({
+                      icon: 'success',
+                      title: 'Actualizado!',
+                      text: 'El registro fue actualizado exitosamente.',
+                      confirmButtonText: 'Aceptar'
+                    });
+      },
+      error: (err) => {
+         Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Ocurrió un problema al guardar los datos.',
+          });
+      }
+    });
+    }else{
+      Swal.fire({
+                icon: 'warning',
+                title: 'Adevertencia',
+                text: 'Llena los campos requeridos',
+                confirmButtonText: 'Aceptar'
+              });
     }
-  });
   }
 }
   
@@ -77,9 +117,19 @@ export class DialogCategoriaComponent {
       console.log( this.data.categoria);
       const it = this.data.categoria;
       this.nombreCategoria = it.tri_cat_nombre;
-      this.idCategoria = it.tri_id_cat;
-      this.estadoCategoria = 1;
+      this.idCategoria = it.tri_cat_id;
+      this.estadoCategoria = it.tri_cat_estado;
     }
+  }
+
+   limpiarDatos(){
+    this.nombreCategoria = "";
+  
+  }
+
+   cerrarDialog(){
+    this.dialog.closeAll();
+  
   }
 
 }

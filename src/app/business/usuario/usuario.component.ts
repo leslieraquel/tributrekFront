@@ -14,11 +14,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogUsuarioComponent } from './dialog-usuario/dialog-usuario.component';
+import { LoadingOverlayComponent } from '../loading-overlay/loading-overlay.component';
+
 
 
 export interface UserData {
-
-
     tri_usu_id: number;
     tri_usu_nombres:string;
     tri_usu_apellido:string;
@@ -46,13 +46,14 @@ export interface UserData {
             CommonModule,
             MatDialogModule,
             FormsModule,
-            ReactiveFormsModule],
+            ReactiveFormsModule,
+          LoadingOverlayComponent],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.scss'
 })
 export class UsuarioComponent  implements AfterViewInit {
-
-     mostrarCard: boolean = false;
+      cargando:boolean= false;
+      mostrarCard: boolean = false;
       displayedColumns: string[] = ['idUsuario', 'nombreUsuario','apellidoUsuario','correoUsuario', 'rolUsuario','estadoUsuario','acciones'];
       dataSource = new MatTableDataSource<UserData>();
     
@@ -64,13 +65,15 @@ export class UsuarioComponent  implements AfterViewInit {
       ngAfterViewInit() {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
-        this.cargarPaquetes();
+        this.cargando = true;
+        this.cargarUsuario();
       }
     
-       cargarPaquetes() {
+       cargarUsuario() {
         this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Usuario/ListarUsuario')
           .subscribe(data => {
             console.log(data);
+            this.cargando = false;
             this.dataSource.data = data;
           }, error => {
             console.error('Error al cargar itinerarios:', error);
@@ -101,19 +104,21 @@ export class UsuarioComponent  implements AfterViewInit {
           this.dataSource.paginator.firstPage();
         }
       }
-      abrirDialogo(modo: 'agregar' | 'editar', itinerario?: any): void {
-        console.log(itinerario);
+      abrirDialogo(modo: 'agregar' | 'editar', usuario?: any): void {
+        console.log(usuario);
     
         this.dialog.open(DialogUsuarioComponent, {
-            width: '90%',   // 90% del ancho del viewport padre (ventana)
-            height: '80%',  // 80% del alto del viewport padre
-            maxWidth: '85%',  // desactivar el maxWidth por defecto
-             data: {
-          modo: modo,                   // 'agregar' o 'editar'
-          itinerario: itinerario || {} // si es editar, le pasas el objeto
-        }
-        });
+             panelClass: 'custom-dialog-container',
+           data: {
+           modo: modo,
+           usuario: usuario || {}
+          }
+        }).afterClosed().subscribe(result => {
+            this.cargarUsuario(); 
+      });
         
       } 
+
+
 
 }

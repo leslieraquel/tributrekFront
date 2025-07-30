@@ -14,6 +14,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogItinerarioComponent } from './dialog-itinerario/dialog-itinerario.component';
+import { LoadingOverlayComponent } from '../loading-overlay/loading-overlay.component';
+
 
 
 
@@ -43,7 +45,8 @@ export interface UserData {
             CommonModule,
             MatDialogModule,
             FormsModule,
-            ReactiveFormsModule 
+            ReactiveFormsModule,
+            LoadingOverlayComponent
           ],
   templateUrl: './itinerario.component.html',
   styleUrl: './itinerario.component.scss'
@@ -51,6 +54,7 @@ export interface UserData {
 
 export class ItinerarioComponent implements AfterViewInit  {
   mostrarCard: boolean = false;
+  cargando: boolean = false;
   displayedColumns: string[] = ['idItinerario', 'nombreItinerario', 'nombreCategoria', 'descripcionNivel','estadoItinerario','acciones'];
   dataSource = new MatTableDataSource<UserData>();
 
@@ -62,22 +66,25 @@ export class ItinerarioComponent implements AfterViewInit  {
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.cargando = true;
     this.cargarItinerarios();
   }
 
    cargarItinerarios() {
+
     this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Itinerario/ListarItinerario')
       .subscribe(data => {
-        console.log(data);
         this.dataSource.data = data;
+         this.cargando = false;
       }, error => {
         console.error('Error al cargar itinerarios:', error);
+         this.cargando = false;
       });
   }
 
   eliminarItinerario(itinerario:any){
     const{idItinerario}=itinerario;
-    console.log(idItinerario);
+    console.log(idItinerario)
     this.http.delete(`https://localhost:7089/api/tributrek/Itinerario/EliminarItinerario/${idItinerario}`)
   .subscribe({
     next: () => {
@@ -103,14 +110,20 @@ export class ItinerarioComponent implements AfterViewInit  {
     console.log(itinerario);
 
     this.dialog.open(DialogItinerarioComponent, {
-         width: '90%',   // 90% del ancho del viewport padre (ventana)
-        height: '80%',  // 80% del alto del viewport padre
-        maxWidth: '85%',  // desactivar el maxWidth por defecto
-         data: {
+      panelClass: 'custom-dialog-container', // desactivar el maxWidth por defecto
+      data: {
       modo: modo,                   // 'agregar' o 'editar'
       itinerario: itinerario || {} // si es editar, le pasas el objeto
     }
-    });
+    }).afterClosed().subscribe(result => {
+      this.cargarItinerarios(); 
+  });;
     
-  } 
+  }
+
+  cerrarDialogo(){
+    this.dialog.closeAll();
+  }
+
+ 
 }

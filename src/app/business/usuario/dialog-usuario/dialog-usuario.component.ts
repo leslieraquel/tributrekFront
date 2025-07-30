@@ -12,6 +12,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
+import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-dialog-usuario',
@@ -24,7 +26,8 @@ import { Inject } from '@angular/core';
     MatDialogModule,
     MatSelectModule,
     FormsModule,
-    MatButtonModule],
+    MatButtonModule,
+    MatIconModule],
   templateUrl: './dialog-usuario.component.html',
   styleUrl: './dialog-usuario.component.scss'
 })
@@ -48,7 +51,7 @@ export class DialogUsuarioComponent {
 
 
 
-  ActualizarOregistrarItinerario() {
+  ActualizarOregistrarUsuario() {
   const nuevoUsuario = {
     tri_usu_id: this.idUsuario,
     tri_usu_apellido: this.apellidoUsuario,
@@ -62,38 +65,76 @@ export class DialogUsuarioComponent {
   const url = 'https://localhost:7089/api/tributrek/Usuario/';
 
   if (this.data.modo === 'agregar') {
-    this.http.post(url+'CrearUsuario', nuevoUsuario).subscribe({
-    next: (res) => {
-      console.log('Itinerario registrado', res);
-      alert('¡Registro exitoso!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar el itinerario');
+    if(this.nombreDeUsuario&&this.apellidoUsuario&&this.correoUsuario&&this.rolSeleccionado){
+      this.http.post(url+'CrearUsuario', nuevoUsuario).subscribe({
+      next: (res) => {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Agregado!',
+          text: 'El registro fue agregado exitosamente.',
+          confirmButtonText: 'Aceptar'
+          }).then(()=>{
+            this.cerrarDialog();
+            this.limpiarDatos();
+          });
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un problema al guardar los datos.',
+          });
+      }
+    });
+    }else{
+        Swal.fire({
+          icon: 'warning',
+          title: 'Adevertencia',
+          text: 'Llena los campos requeridos',
+          confirmButtonText: 'Aceptar'
+          });
     }
-  });
 
   } else if (this.data.modo === 'editar') {
+    if(this.nombreDeUsuario&&this.apellidoUsuario&&this.correoUsuario&&this.rolSeleccionado){
+      this.http.put(`${url}ActualizarUsuario/${nuevoUsuario.tri_usu_id}`, nuevoUsuario).subscribe({
+  
+      next: (res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualizado!',
+          text: 'El registro fue actualizado exitosamente.',
+          confirmButtonText: 'Aceptar'
+          }).then(()=>{
+            this.cerrarDialog();
+          });
+      },
+      error: (err) => {
+         Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Ocurrió un problema al guardar los datos.',
+          });
+      }
+    });
 
-    this.http.put(`${url}ActualizarUsuario/${nuevoUsuario.tri_usu_id}`, nuevoUsuario).subscribe({
-
-    next: (res) => {
-      console.log('Itinerario actualizado correctamente', res);
-      alert('¡Registro actualizado!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar actualizar');
+    }else{
+      Swal.fire({
+          icon: 'warning',
+          title: 'Adevertencia',
+          text: 'Llena los campos requeridos',
+          confirmButtonText: 'Aceptar'
+          });
     }
-  });
+
   }
 }
 
   ngOnInit() {
     console.log('Data recibida en el diálogo:', this.data);
 
-    if (this.data.modo === 'editar' && this.data.itinerario) {
-      const it = this.data.itinerario;
+    if (this.data.modo === 'editar' && this.data.usuario) {
+      const it = this.data.usuario;
 
       this.nombreUsuario = it.tri_usu_nombres;
       this.idUsuario = it.tri_usu_id;
@@ -115,6 +156,23 @@ export class DialogUsuarioComponent {
       }
     });
 
+  }
+
+    limpiarDatos(){
+    
+    this.nombreUsuario = "";
+    this.idUsuario="";
+    this.apellidoUsuario="";
+    this.correoUsuario="";
+    this.nombreDeUsuario="";
+    this.rolSeleccionado="";
+    this.EstadoUsuario="";
+  
+  }
+
+   cerrarDialog(){
+    this.dialog.closeAll();
+  
   }
 
 }

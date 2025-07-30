@@ -1,3 +1,4 @@
+<app-loading-overlay *ngIf="cargando"></app-loading-overlay>
 
 <div class="container mt-5 mb-5 p-4 bg-white shadow rounded">
     
@@ -14,7 +15,7 @@
                     </div>
             </div>
             <div class="col-md-12">
-                <mat-form-field>
+                <mat-form-field class="w-100">
                     <mat-label>Busqueda</mat-label>
                     <input matInput (keyup)="applyFilter($event)" placeholder="Ejm. Paseo del Inca" #input>
                 </mat-form-field>
@@ -50,15 +51,13 @@
           <button mat-mini-fab aria-label="Example icon button with a delete icon" (click)="abrirDialogo('editar', row)">
             <mat-icon>edit</mat-icon>
           </button>
-        <button mat-mini-fab aria-label="Example icon button with a delete icon" >
+        <!-- <button mat-mini-fab aria-label="Example icon button with a delete icon" >
           <mat-icon>delete</mat-icon>
-        </button>
+        </button> -->
     </td>
     </ng-container>
-
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
     <!-- Row shown when there is no matching data. -->
     <tr class="mat-row" *matNoDataRow>
       <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>

@@ -13,7 +13,10 @@ import {MatDividerModule} from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { DialogActividadComponent } from './dialog-actividad/dialog-actividad.component';
+import { DialogActividadComponent } from '../dialog-actividad/dialog-actividad.component';
+import { LoadingOverlayComponent } from '../loading-overlay/loading-overlay.component';
+
+
 
 export interface UserData {
   idActividad: number;
@@ -37,7 +40,8 @@ export interface UserData {
             CommonModule,
             MatDialogModule,
             FormsModule,
-            ReactiveFormsModule ],
+            ReactiveFormsModule,
+          LoadingOverlayComponent ],
   templateUrl: './actividad.component.html',
   styleUrl: './actividad.component.scss'
 })
@@ -52,11 +56,15 @@ export class ActividadComponent implements AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator; 
   @ViewChild(MatSort) sort!: MatSort;
+  cargando: boolean = false;
+
   
     ngAfterViewInit():void {
+      this.cargarActividades();
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.cargarActividades();
+      this.cargando = true;
+
     }
   
      cargarActividades() {
@@ -64,8 +72,20 @@ export class ActividadComponent implements AfterViewInit {
         .subscribe(data => {
           console.log(data);
           this.dataSource.data = data;
+          this.cargando = false;
+
         }, error => {
           console.error('Error al cargar actividades:', error);
+        });
+    }
+
+     eliminarActividades() {
+      this.http.delete('https://localhost:7089/api/tributrek/Actividades/EliminarActividades')
+        .subscribe(data => {
+          console.log(data);
+          this.cargando = false;
+
+        }, error => {
         });
     }
   
@@ -78,20 +98,19 @@ export class ActividadComponent implements AfterViewInit {
       }
     }
 
-    abrirDialogo(modo: 'agregar' | 'editar', actividad?: any): void {
-      console.log("actiadesssss"+actividad);
-      console.log(actividad);
-      this.dialog.open(DialogActividadComponent, {
-        width: '80%',   // 90% del ancho del viewport padre (ventana)
-        height: '30%',  // 80% del alto del viewport padre
-        maxWidth: '80%',  // desactivar el maxWidth por defecto
-        data: {
-        modo: modo,                   // 'agregar' o 'editar'
-        actividad: actividad || {} // si es editar, le pasas el objeto
-        }
-      });
-      
-    } 
+   abrirDialogo(modo: 'agregar' | 'editar', actividad?: any): void {
+  this.dialog.open(DialogActividadComponent, {
+    panelClass: 'custom-dialog-container',
+    data: {
+      modo: modo,
+      actividad: actividad || {}
+    }
+  }).afterClosed().subscribe(result => {
+    // if (result === true) {
+      this.cargarActividades(); // Vuelve a cargar si hubo cambios
+    // }
+  });
+}
 
 
 }

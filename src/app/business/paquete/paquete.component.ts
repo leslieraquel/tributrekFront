@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogPaqueteComponent } from './dialog-paquete/dialog-paquete.component';
 
 
+
 export interface UserData {
   idPaquete: number;
   diasPaquete: string;
@@ -60,6 +61,8 @@ export class PaqueteComponent implements AfterViewInit  {
       this.cargarPaquetes();
     }
 
+    
+
      cargarPaquetes() {
       this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Paquete/ListarPaquete')
         .subscribe(data => {
@@ -98,15 +101,20 @@ export class PaqueteComponent implements AfterViewInit  {
       console.log(paquete);
 
       this.dialog.open(DialogPaqueteComponent, {
-           width: '90%',   // 90% del ancho del viewport padre (ventana)
-          height: '80%',  // 80% del alto del viewport padre
-          maxWidth: '85%',  // desactivar el maxWidth por defecto
+        panelClass: 'custom-dialog-container',
+          width: '95%',   // 90% del ancho del viewport padre (ventana)
+          height: '85%',  // 80% del alto del viewport padre
+          maxWidth: '90%',  // desactivar el maxWidth por defecto
            data: {
         modo: modo,                   // 'agregar' o 'editar'
         paquete: paquete || {} // si es editar, le pasas el objeto
       }
+      }).afterClosed().subscribe(result => {
+            this.cargarPaquetes();
       });
 
+
     }
+
 
 }

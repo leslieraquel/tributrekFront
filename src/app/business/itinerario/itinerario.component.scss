@@ -17,14 +17,3 @@
 //   justify-content: space-between;
 //   flex-wrap: wrap;
 // }
-.dialog-container {
-  width: 100%;
-}
-::ng-deep .mat-dialog-container {
-  max-width: none !important;
-  width: 100% !important;
-}
-.dialog-container {
-  width: 100%;
-  padding: 16px;
-}

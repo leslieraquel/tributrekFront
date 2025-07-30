@@ -1,37 +1,43 @@
   <div class="row">
     <div class="col-md-12 mr-3 dialog-container">
+        <div style=" background-color:  #0e6cc9; color:white" class="mat-dialog-header p-3 d-flex justify-content-between align-items-center border-bottom">
+        <h5 class="mb-0">
+          {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} usuario
+        </h5>
+        <button mat-icon-button (click)="dialog.closeAll()">
+          <mat-icon style="color: white;">close</mat-icon>
+        </button>
+      </div>
     <mat-card class="mt-4">
-      <mat-card-header>
-        <mat-card-title>{{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} Itinerario</mat-card-title>
-      </mat-card-header>
+      
       <mat-card-content>
         <div class="row mt-4">
-            <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+            <div class="col-md-6">
+                <mat-form-field class="w-100">
                 <mat-label>Nombres</mat-label>
                   <input matInput [(ngModel)]="nombreUsuario">
                 </mat-form-field>
             </div>
             <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="w-100">
                 <mat-label>Apellidos</mat-label>
                   <input matInput [(ngModel)]="apellidoUsuario">
                 </mat-form-field>
             </div>
             <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="w-100">
                 <mat-label>Correo</mat-label>
-                  <input matInput [(ngModel)]="apellidoUsuario">
+                  <input matInput [(ngModel)]="correoUsuario">
                 </mat-form-field>
             </div>
               <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="w-100">
                 <mat-label>Nombre login</mat-label>
-                  <input matInput [(ngModel)]="apellidoUsuario">
+                  <input matInput [(ngModel)]="nombreDeUsuario">
                 </mat-form-field>
             </div>
             <div class="col-md-6">
-                <mat-form-field>
+                <mat-form-field class="w-100">
                     <mat-label>Elija un rol</mat-label>
                 <mat-select matNativeControl [(ngModel)]="rolSeleccionado">
                    <mat-option *ngFor="let rol of roles" [value]="rol.tri_rol_id">
@@ -42,9 +48,10 @@
             </div>
         </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
-      </mat-card-actions>
     </mat-card>
+    <mat-card-actions class="p-3 border-top d-flex justify-content-end" >
+        <button class="me-4" mat-flat-button (click)="ActualizarOregistrarUsuario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
+        <button mat-stroked-button (click)="dialog.closeAll()" >Cancelar</button>
+    </mat-card-actions>
     </div>
   </div>

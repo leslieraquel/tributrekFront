@@ -1,31 +1,36 @@
   <div class="row">
-    <div class="col-md-12 mr-3 dialog-container">
-    <mat-card class="mt-4">
-      <mat-card-header>
-        <mat-card-title>{{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} Itinerario</mat-card-title>
-      </mat-card-header>
+    <div class="col-md-12 dialog-container">
+        <div style=" background-color:  #0e6cc9; color:white" class="mat-dialog-header p-3 d-flex justify-content-between align-items-center border-bottom">
+        <h5 class="mb-0">
+          {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} Itinerario
+        </h5>
+        <button mat-icon-button (click)="dialog.closeAll()">
+          <mat-icon style="color: white;">close</mat-icon>
+        </button>
+      </div>
+    <mat-card >
       <mat-card-content>
-        <div class="row mt-4">
-            <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
-                <mat-label>Nombre Itinerario</mat-label>
-                  <input matInput [(ngModel)]="nombreItinerario">
+        <div class="row">
+            <div class="col-md-6">
+                <mat-form-field class="w-100" >
+                <mat-label >Nombre Itinerario</mat-label>
+                  <input required  matInput [(ngModel)]="nombreItinerario">
                 </mat-form-field>
             </div>
             <div class="col-md-6">
-                <mat-form-field>
+                <mat-form-field class="w-100">
                     <mat-label>Elija una categoria</mat-label>
-                <mat-select matNativeControl [(ngModel)]="categoriaSeleccionada">
-                   <mat-option *ngFor="let cat of categorias" [value]="cat.tri_id_cat">
+                <mat-select required  [(ngModel)]="categoriaSeleccionada">
+                   <mat-option *ngFor="let cat of categorias" [value]="cat.tri_cat_id">
                         {{ cat.tri_cat_nombre }}
                     </mat-option>
                 </mat-select>
                 </mat-form-field>
             </div>
             <div class="col-md-6">
-                <mat-form-field>
+                <mat-form-field class="w-100">
                     <mat-label>Elija la dificultad</mat-label>
-                <mat-select matNativeControl [(ngModel)]="nivelSeleccionado">
+                <mat-select required  [(ngModel)]="nivelSeleccionado">
                    <mat-option *ngFor="let niv of niveles" [value]="niv.idNivel">
                         {{ niv.nombreNivel }}
                     </mat-option>
@@ -34,9 +39,10 @@
             </div>
         </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
-      </mat-card-actions>
     </mat-card>
+    <mat-card-actions class="p-3 border-top d-flex justify-content-end" >
+        <button class="me-4" mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
+        <button mat-stroked-button (click)="dialog.closeAll()" >Cancelar</button>
+    </mat-card-actions>
     </div>
   </div>

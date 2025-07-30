@@ -12,6 +12,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -25,7 +26,8 @@ import { Inject } from '@angular/core';
     MatDialogModule,
     MatSelectModule,
     FormsModule,
-    MatButtonModule
+    MatButtonModule,
+    MatIconModule
   ],
   templateUrl: './dialog-itinerario.component.html',
   styleUrl: './dialog-itinerario.component.scss',
@@ -63,28 +65,55 @@ export class DialogItinerarioComponent implements OnInit {
   const url = 'https://localhost:7089/api/tributrek/Itinerario/';
  
   if (this.data.modo === 'agregar') {
-     this.http.post(url+'CrearItinerario', nuevoItinerario).subscribe({
-    next: (res) => {
-      console.log('Itinerario registrado', res);
-      alert('¡Registro exitoso!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar el itinerario');
+    if(nuevoItinerario.tri_itine_nombre && nuevoItinerario.tri_itine_cat_id && nuevoItinerario.tri_itine_niv_id ){
+      this.http.post(url+'CrearItinerario', nuevoItinerario).subscribe({
+      next: (res) => {
+        this.cerrarDialog();
+        this.limpiarDatos();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Agregado!',
+          text: 'El registro fue agregado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
+      },
+      error: (err) => {
+        Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Ocurrió un problema al guardar los datos.',
+        });
+      }
+    });
+
+    }else{
+      Swal.fire({
+          icon: 'warning',
+          title: 'Adevertencia',
+          text: 'Llena los campos requeridos',
+          confirmButtonText: 'Aceptar'
+        });
     }
-  });
 
   } else if (this.data.modo === 'editar') {
   
      this.http.put(`${url}ActualizarItinerario/${nuevoItinerario.tri_itine_id}`, nuevoItinerario).subscribe({
      
     next: (res) => {
-      console.log('Itinerario actualizado correctamente', res);
-      alert('¡Registro actualizado!');
+      this.cerrarDialog();
+      Swal.fire({
+        icon: 'success',
+        title: 'Actualizado!',
+        text: 'El registro fue actualizado exitosamente.',
+        confirmButtonText: 'Aceptar'
+      });
     },
     error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar actualizar');
+      Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un problema al guardar los datos.',
+      });
     }
   });
   }
@@ -123,6 +152,15 @@ export class DialogItinerarioComponent implements OnInit {
         console.error('Error al cargar categorías', err);
       }
     });
+  }
+   limpiarDatos(){
+    this.nombreItinerario = "";
+    this.categoriaSeleccionada="";
+    this.nivelSeleccionado="";
+    this.EstadoItinerario= "";
+  }
+   cerrarDialog(){
+    this.dialog.closeAll();
   }
 
 

@@ -12,6 +12,8 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { MatSelectModule } from '@angular/material/select';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Inject } from '@angular/core';
+import Swal from 'sweetalert2';
+
 
 
 @Component({
@@ -25,7 +27,8 @@ import { Inject } from '@angular/core';
     MatDialogModule,
     MatSelectModule,
     FormsModule,
-    MatButtonModule],
+    MatButtonModule,
+   MatIconModule],
   templateUrl: './dialog-nivel.component.html',
   styleUrl: './dialog-nivel.component.scss'
 })
@@ -34,59 +37,101 @@ constructor(public dialog: MatDialog,private http: HttpClient, @Inject(MAT_DIALO
 
   nombreNivel: any;
   idNivel: any;
-  estadoActividad: any;
+  estadoNivel: any;
 
 
-  ActualizarOregistrarActividad() {
-  const nuevaActividad = {
-    tri_acti_id:this.idActividad,
-    tri_acti_descripcion: this.nombreActividad,
-    tri_acti_estado: this.estadoActividad
+  ActualizarOregistrarNivel() {
+  const nuevoNivel = {
+    tri_niv_id:this.idNivel,
+    tri_niv_dificultad: this.nombreNivel,
+    tri_niv_estado: this.estadoNivel
   };
 
-  const url = 'https://localhost:7089/api/tributrek/Actividades/';
+  const url = 'https://localhost:7089/api/tributrek/Nivel/';
 
   if (this.data.modo === 'agregar') {
-     this.http.post(url+'CrearActividades', nuevaActividad).subscribe({
-    next: (res) => {
-      console.log('Itinerario registrado', res);
-      alert('¡Registro exitoso!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar el itinerario');
+    if(nuevoNivel.tri_niv_dificultad){
+      console.log(nuevoNivel);
+      console.log(this.nombreNivel);
+      this.http.post(url+'CrearNivel', nuevoNivel).subscribe({
+     next: (res) => {
+       this.cerrarDialog();
+        Swal.fire({
+          icon: 'success',
+          title: 'Registrado!',
+          text: 'El registro fue registrado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
+     },
+     error: (err) => {
+       Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error al registrar',
+          confirmButtonText: 'Aceptar'
+        });
+     }
+   });
+    }else{
+      Swal.fire({
+        icon: 'warning',
+        title: 'Adevertencia',
+        text: 'Llena los campos requeridos',
+        confirmButtonText: 'Aceptar'
+      });
     }
-  });
 
   } else if (this.data.modo === 'editar') {
-      console.log(nuevaActividad.tri_acti_id);
-      console.log(nuevaActividad);
-      console.log(this.data.actividad);
-
-     this.http.put(`${url}ActualizarActividad/${nuevaActividad.tri_acti_id}`, nuevaActividad).subscribe({
-
-    next: (res) => {
-      console.log('Itinerario actualizado correctamente', res);
-      alert('¡Registro actualizado!');
-    },
-    error: (err) => {
-      console.error('Error al registrar', err);
-      alert('Error al registrar actualizar');
+    if(nuevoNivel.tri_niv_dificultad){
+      this.http.put(`${url}ActualizarNivel/${nuevoNivel.tri_niv_id}`, nuevoNivel).subscribe({
+  
+      next: (res) => {
+        this.cerrarDialog();
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualizado!',
+          text: 'El registro fue actualizado exitosamente.',
+          confirmButtonText: 'Aceptar'
+        });
+      },
+      error: (err) => {
+         Swal.fire({
+          icon: 'error',
+          title: 'Error!',
+          text: 'Error al actualizar',
+          confirmButtonText: 'Aceptar'
+        });
+      }
+    });
+    }else{
+       Swal.fire({
+        icon: 'warning',
+        title: 'Adevertencia',
+        text: 'Llena los campos requeridos',
+        confirmButtonText: 'Aceptar'
+        });
     }
-  });
+
   }
 }
 
   ngOnInit() {
-    if (this.data.modo === 'editar' && this.data.actividad) {
-      const it = this.data.actividad;
-      console.log("holaaaa")
-      console.log( this.data.actividad);
-      this.nombreActividad = it.nombreActividad;
-      this.idActividad = it.idActividad;
-      this.estadoActividad = it.estadoActividad;
-
+    if (this.data.modo === 'editar' && this.data.nivel) {
+      const it = this.data.nivel;
+      console.log(this.data.nivel);
+      this.nombreNivel = it.nombreNivel;
+      this.idNivel= it.idNivel;
+      this.estadoNivel = it.estadoNivel;
     }
+  }
+
+  limpiarDatos(){
+    this.nombreNivel = "";
+  }
+
+   cerrarDialog(){
+    this.dialog.closeAll();
+  
   }
 
 

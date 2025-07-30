@@ -14,6 +14,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogCategoriaComponent } from './dialog-categoria/dialog-categoria.component';
+import { LoadingOverlayComponent } from '../loading-overlay/loading-overlay.component';
+
 
 
 export interface UserData {
@@ -38,14 +40,15 @@ export interface UserData {
              CommonModule,
              MatDialogModule,
              FormsModule,
-             ReactiveFormsModule],
+             ReactiveFormsModule,
+            LoadingOverlayComponent],
   templateUrl: './categoria.component.html',
   styleUrl: './categoria.component.scss'
 })
 export class CategoriaComponent implements AfterViewInit  {
-
-     mostrarCard: boolean = false;
-      displayedColumns: string[] = ['idCategoria', 'nombreCategoria','acciones'];
+      cargando: boolean = false;
+      mostrarCard: boolean = false;
+      displayedColumns: string[] = ['idCategoria', 'nombreCategoria','estadoCategoria','acciones'];
       dataSource = new MatTableDataSource<UserData>();
   
     constructor(private http: HttpClient,public dialog: MatDialog) {}
@@ -57,13 +60,16 @@ export class CategoriaComponent implements AfterViewInit  {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.cargarCategorias();
+        this.cargando = true;
+
       }
     
        cargarCategorias() {
+
         this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Categoria/ListarCategoria')
           .subscribe(data => {
-            console.log(data);
             this.dataSource.data = data;
+            this.cargando = false;
           }, error => {
             console.error('Error al cargar actividades:', error);
           });
@@ -81,14 +87,14 @@ export class CategoriaComponent implements AfterViewInit  {
       abrirDialogo(modo: 'agregar' | 'editar', categoria?: any): void {
         console.log(categoria); 
         this.dialog.open(DialogCategoriaComponent, {
-          width: '80%',   // 90% del ancho del viewport padre (ventana)
-          height: '30%',  // 80% del alto del viewport padre
-          maxWidth: '80%',  // desactivar el maxWidth por defecto
-          data: {
-          modo: modo,                   // 'agregar' o 'editar'
-          categoria: categoria || {} // si es editar, le pasas el objeto
+           panelClass: 'custom-dialog-container',
+           data: {
+           modo: modo,
+           categoria: categoria || {}
           }
-        });
+        }).afterClosed().subscribe(result => {
+            this.cargarCategorias(); 
+      });
         
       } 
 

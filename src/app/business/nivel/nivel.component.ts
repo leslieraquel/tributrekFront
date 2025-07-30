@@ -14,6 +14,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DialogNivelComponent } from './dialog-nivel/dialog-nivel.component';
+import { LoadingOverlayComponent } from '../loading-overlay/loading-overlay.component';
+
 
 
 export interface UserData {
@@ -38,13 +40,14 @@ export interface UserData {
              CommonModule,
              MatDialogModule,
              FormsModule,
-             ReactiveFormsModule],
+             ReactiveFormsModule,
+             LoadingOverlayComponent],
   templateUrl: './nivel.component.html',
   styleUrl: './nivel.component.scss'
 })
 export class NivelComponent  implements AfterViewInit  {
-
-       mostrarCard: boolean = false;
+        cargando: boolean = false;
+        mostrarCard: boolean = false;
         displayedColumns: string[] = ['idNivel', 'nombreNivel','estadoNivel','acciones'];
         dataSource = new MatTableDataSource<UserData>();
 
@@ -56,12 +59,14 @@ export class NivelComponent  implements AfterViewInit  {
         ngAfterViewInit():void {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+          this.cargando = true;
           this.cargarNiveles();
         }
 
          cargarNiveles() {
           this.http.get<UserData[]>('https://localhost:7089/api/tributrek/Nivel/ListarNivel')
             .subscribe(data => {
+              this.cargando = false;
               console.log(data);
               this.dataSource.data = data;
             }, error => {
@@ -78,17 +83,17 @@ export class NivelComponent  implements AfterViewInit  {
           }
         }
 
-        abrirDialogo(modo: 'agregar' | 'editar', Nivel?: any): void {
-          console.log(Nivel);
+        abrirDialogo(modo: 'agregar' | 'editar', nivel?: any): void {
+          console.log(nivel);
           this.dialog.open(DialogNivelComponent, {
-            width: '80%',   // 90% del ancho del viewport padre (ventana)
-            height: '30%',  // 80% del alto del viewport padre
-            maxWidth: '80%',  // desactivar el maxWidth por defecto
-            data: {
-            modo: modo,                   // 'agregar' o 'editar'
-            Nivel: Nivel || {} // si es editar, le pasas el objeto
-            }
-          });
+            panelClass: 'custom-dialog-container',
+           data: {
+           modo: modo,
+           nivel: nivel || {}
+          }
+        }).afterClosed().subscribe(result => {
+            this.cargarNiveles(); 
+      });
 
         }
 

@@ -1,27 +1,32 @@
   <div class="row">
     <div class="col-md-12 mr-3 dialog-container">
+      <div style=" background-color:  #0e6cc9; color:white" class="mat-dialog-header p-3 d-flex justify-content-between align-items-center border-bottom">
+        <h5 class="mb-0">
+          {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} nivel
+        </h5>
+        <button mat-icon-button (click)="dialog.closeAll()">
+          <mat-icon style="color: white;">close</mat-icon>
+        </button>
+      </div>
     <mat-card class="mt-4">
-      <mat-card-header>
-        <mat-card-title>{{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }} Paquete</mat-card-title>
-      </mat-card-header>
       <mat-card-content>
         <div class="row mt-4">
             <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="w-100">
                 <mat-label>Nombre Paquete</mat-label>
-                  <input matInput [(ngModel)]="descripcionPaquete">
+                  <input matInput [(ngModel)]="paquete.descripcionPaquete">
                 </mat-form-field>
             </div>
              <div class="col-md-6 ">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="w-100">
                 <mat-label>Numero de dias</mat-label>
-                  <input matInput [(ngModel)]="diasPaquete">
+                  <input matInput [(ngModel)]="paquete.cantidadDiasPaquete">
                 </mat-form-field>
             </div>
             <div class="col-md-6">
-                <mat-form-field>
+                <mat-form-field class="w-100">
                     <mat-label>Elija un itinerario</mat-label>
-                <mat-select matNativeControl [(ngModel)]="itinerarioSeleccionada">
+                <mat-select matNativeControl [(ngModel)]="paquete.idItinerario">
                    <mat-option *ngFor="let iti of itinerarios" [value]="iti.idItinerario">
                         {{ iti.nombreItinerario }}
                     </mat-option>
@@ -29,30 +34,58 @@
                 </mat-form-field>
             </div>
         </div>
-        <div class="row" *ngIf="diasArray.length > 0">
+        <div class="row">
           <div class="col-md-12">
+              <button class="btn btn-primary mb-3" (click)="agregarDia();">+ Agregar Día</button>
               <table class="table table-striped table-bordered table-hover">
-                <thead class="table-dark">
+                <thead class="table-dark">  
                   <tr>
-                    <th>#</th>
-                    <th>Actividad</th>
-                    <th>Hora Inicio</th>
-                    <th>Hora Final</th>
+                    <th>Dias</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let persona of personas; let i = index">
-                  <td>2</td>
+                <tr *ngFor="let diaspaquete of paquete.detallesPaq; let i = index">
+                  <td>Día {{ diaspaquete.dianumero }} </td>
+                  <td>
+                    <ul>
+                      <li *ngFor="let act of diaspaquete.actividades; let j = index">
+                        <div class="input-group mt-2">
+                          <div class="mb-3">
+                            <label for="">Elija una actividad</label>
+                            <select class="form-select" [(ngModel)]="act.idActividad" aria-placeholder="elija una actividad" name="itinerario">
+                            <option *ngFor="let act1 of actividades" [value]="act1.idActividad">
+                            {{ act1.nombreActividad }}
+                            </option>
+                            </select>
+                          </div>
+                          <div class="mb-3">
+                            <label for="">Hora Inicio</label>
+                            <input type="time" class="form-control" [(ngModel)]="act.horaInicio">
+                          </div>
+                          <div class="mb-3">
+                            <label for="">Hora Fin</label>
+                            <input type="time" class="form-control" [(ngModel)]="act.horaFin">
+                          </div>
+                           <div class="align-self-end mb-3">
+                              <button class="btn btn-danger btn-sm" (click)="agregarActividad(j)">X</button>
+                            </div>
+                      </div>
+                    </li>
+                    <button class="btn btn-success" (click)="agregarActividad(i)">+</button>
+                    </ul>
+                  </td>
                 </tr>
                 </tbody>
             </table>
           </div>
         </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
-      </mat-card-actions>
     </mat-card>
+    <mat-card-actions class="p-3 border-top d-flex justify-content-end" >
+        <button class="me-4" mat-flat-button (click)="ActualizarOregistrarItinerario()"> {{ data.modo === 'agregar' ? 'Agregar' : 'Actualizar' }}</button>
+        <button mat-stroked-button (click)="dialog.closeAll()" >Cancelar</button>
+    </mat-card-actions>
     </div>
   </div>
 
